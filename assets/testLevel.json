@@ -1,0 +1,10 @@
+{
+  "title": "Testing Level",
+  "description": "The debugging map",
+  "tileAddress": "assets/testLevelMap.png",
+  "playerAddress": "assets/testPlayerSprite.png",
+  "enemyAddress": "assets/testEnemyMap.png",
+  "typeCount": 1,
+  "finishX": 100,
+  "finishY": 100
+}
