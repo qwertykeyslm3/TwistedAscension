@@ -33,14 +33,13 @@ long long last_update = chrono::duration_cast<chrono::milliseconds>(chrono::high
 string levelsDataAddress = "assets/levelData.txt";
 vector<json> levels;
 int currentLevel = 0;
-bool up;
-bool down;
-bool Left;
-bool Right;
 bool space;
 int blink;
+bool Up;
+bool Down;
+bool Left;
+bool Right;
 bool esc;
-int pressCount = 0;
 bool pause;
 int enemyCount = 5;
 long updateCount = 0;
@@ -72,18 +71,12 @@ int main() {
 				return exit("Window closed. Closing", 0);
 			}
 			if (event.type == Event::KeyPressed) {
-				pressCount++;
-				if (pressCount == 0) {
-					if (event.key.code == Keyboard::W) up = true;
-					if (event.key.code == Keyboard::A) down = true;
-					if (event.key.code == Keyboard::S) Left = true;
-					if (event.key.code == Keyboard::D) Right = true;
-					if (event.key.code == Keyboard::Space) space = true;
-					if (event.key.code == Keyboard::Escape) esc = true;
-				}
-			}
-			if (event.type == Event::KeyReleased) {
-				pressCount--;
+				if (event.key.code == Keyboard::W) Up = true;
+				if (event.key.code == Keyboard::A) Left = true;
+				if (event.key.code == Keyboard::S) Down = true;
+				if (event.key.code == Keyboard::D) Right = true;
+				if (event.key.code == Keyboard::Space) space = true;
+				if (event.key.code == Keyboard::Escape) esc = true;
 			}
 		}
 		current_time = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now().time_since_epoch());
@@ -166,6 +159,12 @@ void update() {
 	while (enemies.size() > enemyCount) {
 		enemies.erase(enemies.begin() + (rand() % enemies.size()));
 	}
+	if (esc) {
+		if (pause) { pause = false; }
+		else { pause = true; }
+		esc = false;
+		return;
+	}
 	if (pause) {
 		return;
 	}
@@ -178,28 +177,52 @@ void update() {
 		blink = 60;
 		return;
 	}
-	if (up) {
-		up = false;
+	if (Up) {
+		Up = false;
+		if (maze.getRoom(maze.getPlayerX(), maze.getPlayerY())->getUp()) {
+			int ptr = 0;
+			while (ptr < enemies.size()) {
+				enemies[ptr].moveUp(maze);
+				ptr++;
+			}
+		}
 		maze.moveUp();
-		return;
-	}
-	if (down) {
-		down = false;
-		maze.moveDown();
 		return;
 	}
 	if (Left) {
 		Left = false;
+		if (maze.getRoom(maze.getPlayerX(), maze.getPlayerY())->getLeft()) {
+			int ptr = 0;
+			while (ptr < enemies.size()) {
+				enemies[ptr].moveLeft(maze);
+				ptr++;
+			}
+		}
 		maze.moveLeft();
+		return;
+	}
+	if (Down) {
+		Down = false;
+		if (maze.getRoom(maze.getPlayerX(), maze.getPlayerY())->getDown()) {
+			int ptr = 0;
+			while (ptr < enemies.size()) {
+				enemies[ptr].moveDown(maze);
+				ptr++;
+			}
+		}
+		maze.moveDown();
 		return;
 	}
 	if (Right) {
 		Right = false;
+		if (maze.getRoom(maze.getPlayerX(), maze.getPlayerY())->getRight()) {
+			int ptr = 0;
+			while (ptr < enemies.size()) {
+				enemies[ptr].moveRight(maze);
+				ptr++;
+			}
+		}
 		maze.moveRight();
 		return;
-	}
-	if (esc) {
-		pause = !pause;
-		esc = false;
 	}
 }

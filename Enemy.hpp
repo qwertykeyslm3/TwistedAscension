@@ -13,25 +13,18 @@ private:
 	int ID = 0;
 	int X = 0;
 	int Y = 0;
-	void moveHelper(Maze board) {
-		if (board.isSafe(board.getRoom(X, Y))) {
-			return;
+	void boardChecker(Maze board) {
+		while (X >= board.getWidth()) {
+			X -= board.getWidth();
 		}
-		if (board.getRoom(X, Y)->getUp() && board.getRoom(X, Y + 1)->getDist() < board.getRoom(X, Y)->getDist() && !board.getRoom(X, Y + 1)->getOccupied()) {
-			Y++;
-			return;
+		while (X < 0) {
+			X += board.getWidth();
 		}
-		if (board.getRoom(X, Y)->getDown() && board.getRoom(X, Y - 1)->getDist() < board.getRoom(X, Y)->getDist() && !board.getRoom(X, Y - 1)->getOccupied()) {
-			Y--;
-			return;
+		while (Y < 0) {
+			Y += board.getHeight();
 		}
-		if (board.getRoom(X, Y)->getLeft() && board.getRoom(X - 1, Y)->getDist() < board.getRoom(X, Y)->getDist() && !board.getRoom(X - 1, Y)->getOccupied()) {
-			X--;
-			return;
-		}
-		if (board.getRoom(X, Y)->getRight() && board.getRoom(X + 1, Y)->getDist() < board.getRoom(X, Y)->getDist() && !board.getRoom(X + 1, Y)->getOccupied()) {
-			X++;
-			return;
+		while (Y >= board.getHeight()) {
+			Y -= board.getHeight();
 		}
 	}
 public:
@@ -49,34 +42,34 @@ public:
 		int y;
 		srand(time(NULL));
 		x = rand() % maze.getWidth();
-		y = rand() % maze.getWidth();
+		y = rand() % maze.getHeight();
 		while (occupied[x][y]) {
 			x = rand() % maze.getWidth();
 			y = rand() % maze.getWidth();
 		}
-		setX(x);
-		setY(y);
+		setX(x, maze);
+		setY(y, maze);
 	}
 	int getID() { return ID; }
 	int getX() { return X; }
 	int getY() { return Y; }
 	void setID(int input) { ID = input; }
-	void setX(int input) { X = input; }
-	void setY(int input) { Y = input; }
+	void setX(int input, Maze maze) { X = input; boardChecker(maze); }
+	void setY(int input, Maze maze) { Y = input; boardChecker(maze); }
+	void moveUp(Maze maze) {
+		setY(Y - 1, maze);
+	}
+	void moveDown(Maze maze) {
+		setY(Y + 1, maze);
+	}
+	void moveLeft(Maze maze) {
+		setX(X + 1, maze);
+	}
+	void moveRight(Maze maze) {
+		setX(X - 1, maze);
+	}
 	void move(Maze board) {
-		moveHelper(board);
-		while (X > board.getWidth()) {
-			X -= board.getWidth();
-		}
-		while (X < board.getWidth()) {
-			X += board.getWidth();
-		}
-		while (Y < board.getHeight()) {
-			Y += board.getHeight();
-		}
-		while (Y > board.getHeight()) {
-			Y -= board.getHeight();
-		}
+		//TODO
 	}
 };
 
