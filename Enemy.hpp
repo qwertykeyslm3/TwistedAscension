@@ -69,7 +69,24 @@ public:
 		setX(X - 1, maze);
 	}
 	void move(Maze board) {
-		//TODO
+		if (board.isSafe(board.getRoom(X, Y))) {
+			return;
+		}
+		if (board.getRoom(X, Y)->getUp() && board.getRoom(X, Y)->getDist() > board.getRoom(X, Y + 1)->getDist() && !board.getRoom(X, Y + 1)->getOccupied()) {
+			moveDown(board);
+			return;
+		}
+		if (board.getRoom(X, Y)->getDown() && board.getRoom(X, Y)->getDist() > board.getRoom(X, Y - 1)->getDist() && !board.getRoom(X, Y - 1)->getOccupied()) {
+			moveUp(board);
+			return;
+		}
+		if (board.getRoom(X, Y)->getLeft() && board.getRoom(X, Y)->getDist() > board.getRoom(X - 1, Y)->getDist() && !board.getRoom(X - 1, Y)->getOccupied()) {
+			moveRight(board);
+			return;
+		}
+		if (board.getRoom(X, Y)->getRight() && board.getRoom(X, Y)->getDist() > board.getRoom(X + 1, Y)->getDist() && !board.getRoom(X + 1, Y)->getOccupied()) {
+			moveLeft(board);
+		}
 	}
 };
 

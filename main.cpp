@@ -43,6 +43,9 @@ bool esc;
 bool pause;
 int enemyCount = 5;
 long updateCount = 0;
+bool moveWithPlayer = false;
+int playerMoveTime = 0;
+int moveTime = 5;
 vector<Enemy> enemies;
 
 int main() {
@@ -177,7 +180,16 @@ void update() {
 		blink = 60;
 		return;
 	}
-	if (Up) {
+	if (!moveWithPlayer && updateCount % (moveTime + 1) == 0) {
+		int ptr = 0;
+		while (ptr < enemies.size()) {
+			maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(false);
+			enemies[ptr].move(maze);
+			maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(true);
+			ptr++;
+		}
+	}
+	if (Up && updateCount % (playerMoveTime + 1) == 0) {
 		Up = false;
 		if (maze.getRoom(maze.getPlayerX(), maze.getPlayerY())->getUp()) {
 			int ptr = 0;
@@ -187,9 +199,18 @@ void update() {
 			}
 		}
 		maze.moveUp();
+		if (moveWithPlayer) {
+			int ptr = 0;
+			while (ptr < enemies.size()) {
+				maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(false);
+				enemies[ptr].move(maze);
+				maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(true);
+				ptr++;
+			}
+		}
 		return;
 	}
-	if (Left) {
+	if (Left && updateCount % (playerMoveTime + 1) == 0) {
 		Left = false;
 		if (maze.getRoom(maze.getPlayerX(), maze.getPlayerY())->getLeft()) {
 			int ptr = 0;
@@ -199,9 +220,18 @@ void update() {
 			}
 		}
 		maze.moveLeft();
+		if (moveWithPlayer) {
+			int ptr = 0;
+			while (ptr < enemies.size()) {
+				maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(false);
+				enemies[ptr].move(maze);
+				maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(true);
+				ptr++;
+			}
+		}
 		return;
 	}
-	if (Down) {
+	if (Down && updateCount % (playerMoveTime + 1) == 0) {
 		Down = false;
 		if (maze.getRoom(maze.getPlayerX(), maze.getPlayerY())->getDown()) {
 			int ptr = 0;
@@ -211,9 +241,18 @@ void update() {
 			}
 		}
 		maze.moveDown();
+		if (moveWithPlayer) {
+			int ptr = 0;
+			while (ptr < enemies.size()) {
+				maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(false);
+				enemies[ptr].move(maze);
+				maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(true);
+				ptr++;
+			}
+		}
 		return;
 	}
-	if (Right) {
+	if (Right && updateCount % (playerMoveTime + 1) == 0) {
 		Right = false;
 		if (maze.getRoom(maze.getPlayerX(), maze.getPlayerY())->getRight()) {
 			int ptr = 0;
@@ -223,6 +262,15 @@ void update() {
 			}
 		}
 		maze.moveRight();
+		if (moveWithPlayer) {
+			int ptr = 0;
+			while (ptr < enemies.size()) {
+				maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(false);
+				enemies[ptr].move(maze);
+				maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->setOccupied(true);
+				ptr++;
+			}
+		}
 		return;
 	}
 }
