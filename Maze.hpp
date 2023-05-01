@@ -395,6 +395,16 @@ public:
     void setFirstGen(bool input) {
         firstGen = input;
     }
+    void offsetWorldCoords(int deltaX, int deltaY) {
+        int x;
+        int y;
+        for (x = 0; x < getWidth(); x++) {
+            for (y = 0; y < getHeight(); y++) {
+                getRoom(x, y)->setWorldX(getRoom(x, y)->getWorldX() + deltaX);
+                getRoom(x, y)->setWorldY(getRoom(x, y)->getWorldY() + deltaY);
+            }
+        }
+    }
 };
 
 #endif

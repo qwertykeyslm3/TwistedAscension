@@ -5,6 +5,7 @@
   "playerAddress": "assets/testPlayerSprite.png",
   "enemyAddress": "assets/testEnemyMap.png",
   "typeCount": 1,
+  "enemyCount": 5,
   "finishX": 100,
   "finishY": 100
 }

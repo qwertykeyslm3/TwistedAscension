@@ -31,7 +31,7 @@ public:
 	Enemy() {}
 	Enemy(int x, int y) : X(x),Y(Y) {}
 	Enemy(int x, int y, int id) : X(x), Y(y), ID(id) {}
-	Enemy(vector<Enemy> enemies, Maze maze) {
+	Enemy(vector<Enemy> enemies, Maze maze, int idCount) {
 		vector<vector<bool>> occupied;
 		occupied.resize(maze.getWidth(), vector<bool>(maze.getHeight()));
 		int ptr;
@@ -47,6 +47,7 @@ public:
 			x = rand() % maze.getWidth();
 			y = rand() % maze.getWidth();
 		}
+		setID(rand() % idCount);
 		setX(x, maze);
 		setY(y, maze);
 	}

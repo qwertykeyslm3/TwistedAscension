@@ -15,6 +15,11 @@ using json = nlohmann::json;
 
 void render();
 void update();
+void nextLevel();
+void randomizeEnemies();
+string titleBuilder();
+string playTime();
+void collision();
 int exit(string input, int error);
 
 int fps = 60;
@@ -47,6 +52,8 @@ bool moveWithPlayer = false;
 int playerMoveTime = 0;
 int moveTime = 5;
 vector<Enemy> enemies;
+int offsetMax = 50;
+int blinkTime = 60;
 
 int main() {
 	srand(start_time.count());
@@ -89,8 +96,12 @@ int main() {
 		while (current_time.count() - last_update >= 1000 / fps) {
 			last_update += (1000 / fps);
 			update();
+			if (!playing) {
+				return 0;
+			}
 			updateCount++;
 		}
+		window.setTitle(titleBuilder());
 		render();
 	}
 }
@@ -157,7 +168,7 @@ void render() {
 
 void update() {
 	while (enemies.size() < enemyCount) {
-		enemies.push_back(Enemy(enemies, maze));
+		enemies.push_back(Enemy(enemies, maze, levels[currentLevel]["typeCount"]));
 	}
 	while (enemies.size() > enemyCount) {
 		enemies.erase(enemies.begin() + (rand() % enemies.size()));
@@ -171,13 +182,27 @@ void update() {
 	if (pause) {
 		return;
 	}
+	collision();
 	if (blink > 0) {
 		blink--;
 		return;
 	}
+	if (maze.getPlayerWorldX() == levels[currentLevel]["finishX"] && maze.getPlayerWorldY() == levels[currentLevel]["finishY"]) {
+		nextLevel();
+	}
 	if (space) {
 		space = false;
-		blink = 60;
+		blink = blinkTime;
+		maze.setFirstGen(true);
+		int x;
+		int y;
+		for (x = 0; x < maze.getWidth(); x++) {
+			for (y = 0; y < maze.getHeight(); y++) {
+				maze.getRoom(x, y)->reset();
+			}
+		}
+		maze.generateMaze();
+		randomizeEnemies();
 		return;
 	}
 	if (!moveWithPlayer && updateCount % (moveTime + 1) == 0) {
@@ -273,4 +298,67 @@ void update() {
 		}
 		return;
 	}
+}
+
+void randomizeEnemies() {
+	while (enemies.size() > 0) {
+		enemies.erase(enemies.begin());
+	}
+}
+
+void nextLevel() {
+	currentLevel++;
+	if (currentLevel >= levels.size()) { exit("Game complete. Closing.", 0); return; }
+	maze = Maze(maze.getWidth(), maze.getHeight());
+	enemyCount = levels[currentLevel]["enemyCount"];
+	randomizeEnemies();
+}
+
+string titleBuilder() {
+	stringstream output;
+	output << title;
+	output << " - ";
+	output << playTime();
+	output << " - (";
+	output << maze.getPlayerWorldX();
+	output << ", ";
+	output << maze.getPlayerWorldY();
+	output << ")";
+	return output.str();
+}
+
+void collision() {
+	int ptr = 0;
+	while (ptr < enemies.size()) {
+		if (enemies[ptr].getX() == maze.getPlayerX() && enemies[ptr].getY() == maze.getPlayerY()) {
+			maze.offsetWorldCoords((rand() % (2 * offsetMax)) - offsetMax, (rand() % (2 * offsetMax)) - offsetMax);
+			space = true;
+			break;
+		}
+		ptr++;
+	}
+}
+
+string playTime() {
+	stringstream output;
+	long long millis = current_time.count() - start_time.count();
+	int hours = (millis / (1000 * 60 * 60));
+	millis %= (1000 * 60 * 60);
+	int minutes = (millis / (1000 * 60));
+	millis %= (1000 * 60);
+	int seconds = (millis / 1000);
+	millis %= 1000;
+	if (hours < 10) { output << "0"; }
+	output << hours;
+	output << ":";
+	if (minutes < 10) { output << "0"; }
+	output << minutes;
+	output << ":";
+	if (seconds < 10) { output << "0"; }
+	output << seconds;
+	output << ":";
+	if (millis < 100) { output << "0"; }
+	if (millis < 10) { output << "0"; }
+	output << millis;
+	return output.str();
 }
