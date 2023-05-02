@@ -160,6 +160,23 @@ void render() {
 		ptr++;
 	}
 
+	if (pause) {
+		RectangleShape pauseBackground(Vector2f(width, height));
+		pauseBackground.setPosition(0, 0);
+		pauseBackground.setFillColor(Color::Black);
+		Color opacity = pauseBackground.getFillColor();
+		opacity.a = 192;
+		pauseBackground.setFillColor(opacity);
+		rt.draw(pauseBackground);
+		Sprite titleBar;
+		Texture titleMap;
+		titleMap.loadFromFile("assets/testLevelMarker.png");
+		titleBar.setTexture(titleMap);
+		titleBar.setScale(Vector2f(2 * scaleFactor, 2 * scaleFactor));
+		titleBar.setPosition(0, 0);
+		rt.draw(titleBar);
+	}
+
 	rt.display();
 	window.clear();
 	window.draw(Sprite(rt.getTexture()));
