@@ -62,9 +62,10 @@ int blinkTime = 60;
 vector<string> collectedPages;
 vector<int> pageNumbers;
 bool debug = false;
-string saveAddress = "Saves/saveFile.json";
+string saveAddress = "Save/saveFile.json";
 
 int main() {
+	load();
 	srand(start_time.count());
 	maze.generateMaze();
 	ifstream levelAddress(levelsDataAddress);
@@ -120,6 +121,7 @@ int exit(string input, int error) {
 	cout << endl;
 	window.close();
 	playing = false;
+	save();
 	return error;
 }
 
@@ -435,7 +437,9 @@ string titleBuilder() {
 	output << maze.getPlayerWorldX();
 	output << ", ";
 	output << maze.getPlayerWorldY();
-	output << ")";
+	output << ") - ";
+	output << collectedPages.size();
+	output << "/30";
 	return output.str();
 }
 
