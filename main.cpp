@@ -57,7 +57,7 @@ int playerMoveTime = 0;
 int moveTime = 5;
 vector<Enemy> enemies;
 int offsetMax = 50;
-int blinkTime = 60;
+int blinkTime = 30;
 vector<string> collectedPages;
 vector<int> pageNumbers;
 bool debug = false;
@@ -231,7 +231,6 @@ void render() {
 		titleBar.setScale(Vector2f(2 * scaleFactor, 2 * scaleFactor));
 		titleBar.setPosition(0, 0);
 		rt.draw(titleBar);
-		renderText(0, 0, "HI");
 	}
 
 	rt.display();
