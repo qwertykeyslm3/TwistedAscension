@@ -49,6 +49,7 @@ bool pause;
 int enemyCount = 5;
 long updateCount = 0;
 bool moveWithPlayer = false;
+int mazeUpdateTime = 120;
 int playerMoveTime = 0;
 int moveTime = 5;
 vector<Enemy> enemies;
@@ -135,7 +136,30 @@ void render() {
 		for (y = 0; y < maze.getHeight(); y++) {
 			tile.setTextureRect(IntRect(maze.getRoom(x, y)->getID() * tileSize, 0, tileSize, tileSize));
 			tile.setPosition(x * scaleFactor * tileSize, (height - (y * scaleFactor * tileSize)) - (tileSize * scaleFactor));
+			Color opacity = tile.getColor();
+			opacity.a = 255;
+			tile.setColor(opacity);
 			if (blink <= 0) {
+				if (!maze.isSafe(maze.getRoom(x, y))) {
+					opacity.a = 64;
+					tile.setColor(opacity);
+					if (y + 1 < maze.getHeight() && maze.isSafe(maze.getRoom(x, y + 1)) && maze.getRoom(x, y)->getUp()) {
+						opacity.a = 255;
+						tile.setColor(opacity);
+					}
+					if (y - 1 >= 0 && maze.isSafe(maze.getRoom(x, y - 1)) && maze.getRoom(x, y)->getDown()) {
+						opacity.a = 255;
+						tile.setColor(opacity);
+					}
+					if (x + 1 < maze.getWidth() && maze.isSafe(maze.getRoom(x + 1, y)) && maze.getRoom(x, y)->getRight()) {
+						opacity.a = 255;
+						tile.setColor(opacity);
+					}
+					if (x - 1 >= 0 && maze.isSafe(maze.getRoom(x - 1, y)) && maze.getRoom(x, y)->getLeft()) {
+						opacity.a = 255;
+						tile.setColor(opacity);
+					}
+				}
 				rt.draw(tile);
 			}
 		}
@@ -154,7 +178,30 @@ void render() {
 	while (ptr < enemies.size()) {
 		enemy.setPosition(enemies[ptr].getX() * scaleFactor * tileSize, (height - (enemies[ptr].getY() * scaleFactor * tileSize)) - (tileSize * scaleFactor));
 		enemy.setTextureRect(IntRect((enemies[ptr].getID()) * tileSize, 0, tileSize, tileSize));
+		Color opacity = enemy.getColor();
+		opacity.a = 255;
+		enemy.setColor(opacity);
 		if (blink <= 0) {
+			if (!maze.isSafe(maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY()))) {
+				opacity.a = 64;
+				enemy.setColor(opacity);
+				if (enemies[ptr].getY() + 1 < maze.getHeight() && maze.isSafe(maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY() + 1)) && maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->getUp()) {
+					opacity.a = 255;
+					enemy.setColor(opacity);
+				}
+				if (enemies[ptr].getY() - 1 >= 0 && maze.isSafe(maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY() - 1)) && maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->getDown()) {
+					opacity.a = 255;
+					enemy.setColor(opacity);
+				}
+				if (enemies[ptr].getX() + 1 < maze.getWidth() && maze.isSafe(maze.getRoom(enemies[ptr].getX() + 1, enemies[ptr].getY())) && maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->getRight()) {
+					opacity.a = 255;
+					enemy.setColor(opacity);
+				}
+				if (enemies[ptr].getX() - 1 >= 0 && maze.isSafe(maze.getRoom(enemies[ptr].getX() - 1, enemies[ptr].getY())) && maze.getRoom(enemies[ptr].getX(), enemies[ptr].getY())->getLeft()) {
+					opacity.a = 255;
+					enemy.setColor(opacity);
+				}
+			}
 			rt.draw(enemy);
 		}
 		ptr++;
@@ -206,6 +253,9 @@ void update() {
 	}
 	if (maze.getPlayerWorldX() == levels[currentLevel]["finishX"] && maze.getPlayerWorldY() == levels[currentLevel]["finishY"]) {
 		nextLevel();
+	}
+	if (updateCount % mazeUpdateTime == 0 && updateCount != 0) {
+		maze.regen();
 	}
 	if (space) {
 		space = false;
