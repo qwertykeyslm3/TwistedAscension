@@ -22,7 +22,6 @@ string playTime();
 void collision();
 int exit(string input, int error);
 void sortPages();
-void renderText(int x, int y, const string &input);
 void save();
 void load();
 
@@ -232,6 +231,7 @@ void render() {
 		titleBar.setScale(Vector2f(2 * scaleFactor, 2 * scaleFactor));
 		titleBar.setPosition(0, 0);
 		rt.draw(titleBar);
+		renderText(0, 0, "HI");
 	}
 
 	rt.display();
@@ -490,30 +490,6 @@ void sortPages() {
 				swap(collectedPages[ptr1], collectedPages[ptr2]);
 				swap(pageNumbers[ptr1], pageNumbers[ptr2]);
 			}
-		}
-	}
-}
-
-void renderText(int x, int y, const string &input) {
-	Texture words;
-	int textWidth = levels[currentLevel]["fontWidth"];
-	int textHeight = levels[currentLevel]["fontHeight"];
-	words.loadFromFile(levels[currentLevel]["fontAddress"]);
-	Sprite letter;
-	letter.setTexture(words);
-	letter.setScale(Vector2f(scaleFactor, scaleFactor));
-	int ptr = 0;
-	int currentX = x;
-	int currentY = y;
-	while (ptr < input.size()) {
-		letter.setTextureRect(IntRect(textWidth * input[ptr], 0, textWidth, textHeight));
-		if (input[ptr] == '\n') {
-			currentX = x;
-			currentY += textHeight * scaleFactor;
-		} else {
-			letter.setPosition(currentX, currentY);
-			rt.draw(letter);
-			currentX += textHeight * scaleFactor;
 		}
 	}
 }
