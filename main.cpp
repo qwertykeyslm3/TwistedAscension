@@ -58,7 +58,7 @@ int offsetMax = 50;
 int blinkTime = 60;
 vector<string> collectedPages;
 vector<int> pageNumbers;
-bool debug = true;
+bool debug = false;
 
 int main() {
 	srand(start_time.count());
@@ -315,6 +315,10 @@ void update() {
 				ptr++;
 			}
 		}
+		if (debug) {
+			maze.offsetWorldCoords(0, 1);
+			return;
+		}
 		maze.moveUp();
 		if (moveWithPlayer) {
 			int ptr = 0;
@@ -335,6 +339,10 @@ void update() {
 				enemies[ptr].moveLeft(maze);
 				ptr++;
 			}
+		}
+		if (debug) {
+			maze.offsetWorldCoords(-1, 0);
+			return;
 		}
 		maze.moveLeft();
 		if (moveWithPlayer) {
@@ -357,6 +365,10 @@ void update() {
 				ptr++;
 			}
 		}
+		if (debug) {
+			maze.offsetWorldCoords(0, -1);
+			return;
+		}
 		maze.moveDown();
 		if (moveWithPlayer) {
 			int ptr = 0;
@@ -377,6 +389,10 @@ void update() {
 				enemies[ptr].moveRight(maze);
 				ptr++;
 			}
+		}
+		if (debug) {
+			maze.offsetWorldCoords(1, 0);
+			return;
 		}
 		maze.moveRight();
 		if (moveWithPlayer) {
