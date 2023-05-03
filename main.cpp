@@ -22,6 +22,9 @@ string playTime();
 void collision();
 int exit(string input, int error);
 void sortPages();
+void renderText(int x, int y, const string &input);
+void save();
+void load();
 
 int fps = 60;
 Maze maze(17);
@@ -59,6 +62,7 @@ int blinkTime = 60;
 vector<string> collectedPages;
 vector<int> pageNumbers;
 bool debug = false;
+string saveAddress = "Saves/saveFile.json";
 
 int main() {
 	srand(start_time.count());
@@ -484,4 +488,52 @@ void sortPages() {
 			}
 		}
 	}
+}
+
+void renderText(int x, int y, const string &input) {
+	Texture words;
+	int textWidth = levels[currentLevel]["fontWidth"];
+	int textHeight = levels[currentLevel]["fontHeight"];
+	words.loadFromFile(levels[currentLevel]["fontAddress"]);
+	Sprite letter;
+	letter.setTexture(words);
+	letter.setScale(Vector2f(scaleFactor, scaleFactor));
+	int ptr = 0;
+	int currentX = x;
+	int currentY = y;
+	while (ptr < input.size()) {
+		letter.setTextureRect(IntRect(textWidth * input[ptr], 0, textWidth, textHeight));
+		if (input[ptr] == '\n') {
+			currentX = x;
+			currentY += textHeight * scaleFactor;
+		} else {
+			letter.setPosition(currentX, currentY);
+			rt.draw(letter);
+			currentX += textHeight * scaleFactor;
+		}
+	}
+}
+
+void save() {
+	ofstream saveFile(saveAddress);
+	json saveData;
+	saveData["pages"] = collectedPages;
+	saveData["pageNums"] = pageNumbers;
+	saveData["level"] = currentLevel;
+	saveFile << saveData.dump(1);
+	saveFile.close();
+}
+
+void load() {
+	ifstream saveFile(saveAddress);
+	if (!saveFile.is_open()) {
+		cout << "No save found." << endl;
+		return;
+	}
+	json saveData;
+	saveFile >> saveData;
+	saveFile.close();
+	currentLevel = saveData["level"];
+	collectedPages = saveData["pages"].get<vector<string>>();
+	pageNumbers = saveData["pageNums"].get<vector<int>>();
 }

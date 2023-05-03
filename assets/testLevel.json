@@ -4,6 +4,9 @@
   "enemyCount": 5,
   "finishX": 100,
   "finishY": 100,
+  "fontAddress": "assets/testFont.png",
+  "fontHeight": 16,
+  "fontWidth": 16,
   "journalEntries": [
     {
       "page":  1,
