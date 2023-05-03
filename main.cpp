@@ -21,6 +21,7 @@ string titleBuilder();
 string playTime();
 void collision();
 int exit(string input, int error);
+void sortPages();
 
 int fps = 60;
 Maze maze(17);
@@ -55,6 +56,9 @@ int moveTime = 5;
 vector<Enemy> enemies;
 int offsetMax = 50;
 int blinkTime = 60;
+vector<string> collectedPages;
+vector<int> pageNumbers;
+bool debug = true;
 
 int main() {
 	srand(start_time.count());
@@ -73,7 +77,7 @@ int main() {
 	}
 	levelAddress.close();
 	if (levels.size() == 0) {
-		return exit("no levels present. Closing.", 1);
+		return exit("No levels present. Closing.", 1);
 	}
 	while (playing) {
 		Event event;
@@ -254,6 +258,27 @@ void update() {
 	if (maze.getPlayerWorldX() == levels[currentLevel]["finishX"] && maze.getPlayerWorldY() == levels[currentLevel]["finishY"]) {
 		nextLevel();
 	}
+	int pageChecker = 0;
+	vector<json> pageData = levels[currentLevel]["journalEntries"];
+	while (pageChecker < pageData.size()) {
+		if (maze.getPlayerWorldX() == pageData[pageChecker]["x"] && maze.getPlayerWorldY() == pageData[pageChecker]["y"]) {
+			int pgPtr = 0;
+			bool add = true;
+			while (pgPtr < collectedPages.size()) {
+				if (pageNumbers[pgPtr] == pageData[pageChecker]["page"]) {
+					add = false;
+					break;
+				}
+				pgPtr++;
+			}
+			if (add) {
+				collectedPages.push_back(pageData[pageChecker]["address"]);
+				pageNumbers.push_back(pageData[pageChecker]["page"]);
+				sortPages();
+			}
+		}
+		pageChecker++;
+	}
 	if (updateCount % mazeUpdateTime == 0 && updateCount != 0) {
 		maze.regen();
 	}
@@ -396,13 +421,15 @@ string titleBuilder() {
 
 void collision() {
 	int ptr = 0;
-	while (ptr < enemies.size()) {
-		if (enemies[ptr].getX() == maze.getPlayerX() && enemies[ptr].getY() == maze.getPlayerY()) {
-			maze.offsetWorldCoords((rand() % (2 * offsetMax)) - offsetMax, (rand() % (2 * offsetMax)) - offsetMax);
-			space = true;
-			break;
+	if (!debug) {
+		while (ptr < enemies.size()) {
+			if (enemies[ptr].getX() == maze.getPlayerX() && enemies[ptr].getY() == maze.getPlayerY()) {
+				maze.offsetWorldCoords((rand() % (2 * offsetMax)) - offsetMax, (rand() % (2 * offsetMax)) - offsetMax);
+				space = true;
+				break;
+			}
+			ptr++;
 		}
-		ptr++;
 	}
 }
 
@@ -428,4 +455,17 @@ string playTime() {
 	if (millis < 10) { output << "0"; }
 	output << millis;
 	return output.str();
+}
+
+void sortPages() {
+	int ptr1;
+	int ptr2;
+	for (ptr1 = 0; ptr1 < collectedPages.size(); ptr1++) {
+		for (ptr2 = ptr1; ptr2 < collectedPages.size(); ptr2++) {
+			if (pageNumbers[ptr2] > pageNumbers[ptr1]) {
+				swap(collectedPages[ptr1], collectedPages[ptr2]);
+				swap(pageNumbers[ptr1], pageNumbers[ptr2]);
+			}
+		}
+	}
 }
